@@ -1,0 +1,20 @@
+autom4te.cache
+create_delta.bundle
+Makefile.local
+micromamba
+muses_environment_installed.yml
+*~
+\#*#
+.#*
+.DS_Store
+*.pyc
+*.o
+*.lo
+.cache
+.tramp_history
+src/
+muses-conda-channel.tar
+# Test directories, that are local
+muses-package/refractor-framework/absco
+muses-package/refractor-framework/merra
+

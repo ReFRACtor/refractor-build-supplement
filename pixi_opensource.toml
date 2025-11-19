@@ -1,0 +1,292 @@
+[workspace]
+authors = ["Mike Smyth <Mike.M.Smyth@jpl.nasa.gov>"]
+channels = ["conda-forge", "fake-muses-conda-channel"]
+name = "muses-env-pixi"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = "*"
+conda = "*"
+pip = "*"
+wheel = "*"
+setuptools = "*"
+# Not positive we want this. It pulls in a lot of packages, but this
+# is what is needed to build framework. Being able to build
+# framework isn't a strict requirement, we could install with just
+# the framework package. But at least for now assume we want all
+# these tools all the time.
+refractor-development-tools = "*"
+# Make sure we get the mpich version rather than openmpi. amuse-me depends on
+# the arguments mpich has
+mpi = { version = "*", build = "mpich" }
+# Needed by pip packages as dependencies, go ahead and install as conda
+# packages. Note you can inspect pixi info to find
+# out what should get added to this list
+six = "*"
+configobj = "*"
+defusedxml = "*"
+requests = "*"
+owslib = "*"
+cffi = "*"
+pycparser = "*"
+appdirs = "*"
+pyhdf = "*"
+doxygen = "*"
+# Useful tools, not a strict requirement
+ruff = "*"
+mypy = "*"
+scipy-stubs = "*"
+pandas-stubs = "*"
+types-pytz = "*"
+#
+# List dependencies for each package. Note we go ahead and list
+# dependencies they may already be in the list, just in case a
+# package removes a dependency needed elsewhere. Where we can, we
+# want to use conda packages in preference to pip. There are a few
+# packages that aren't in conda, but can easily be installed with
+# pip (e.g., python only packages). We list them here just to
+# indicate we didn't miss it, but then comment out the the
+# dependency.  We then install that latter with pip at the end of
+# this file.
+#
+# amuse-config
+# -------------
+click = "*"
+click-option-group = "*"
+jinja2 = "*"
+texttable = "*"
+click-config-file = "*"
+pyyaml = "*"
+# 
+# py-combine
+# ----------
+# click = "*"
+# click-config-file = "*"
+mpi4py = "*"
+netCDF4 = "*"
+numpy = "*"
+#
+# py-generate-targets
+# -------------------
+# click = "*"
+# click-config-file = "*"
+# numpy = "*"
+# netCDF4 = "*"
+pandas = "*"
+astropy = "*"
+#
+# py-geolocate
+# ------------
+# click = "*"
+python-dateutil = "*"
+# numpy = "*"
+scipy = "*"
+# netCDF4 = "*"
+h5py = "*"
+# pyhdf = "*"
+untangle = "*"
+# astropy = "*"
+# No conda package, fall back to pypi
+# woudc-extcsv = "*"
+# pandas = "*"
+#
+# py-level3
+# ---------
+# click = "*"
+# mpi4py = "*"
+# numpy = "*"
+# scipy = "*"
+# netCDF4 = "*"
+#
+# py-pair
+# -------
+# click = "*"
+# click-config-file = "*"
+# pyyaml = "*"
+# numpy = "*"
+# pandas = "*"
+# netCDF4 = "*"
+mock = "*"
+# h5py = "*"
+#
+# py-plot
+# -------
+# click = "*"
+# mpi4py = "*"
+# numpy = "*"
+# netCDF4 = "*"
+matplotlib = "*"
+basemap = "*"
+# jinja2 = "*"
+cairocffi = "*"
+pycairo = "*"
+#
+# py-retrieve
+# -----------
+# setuptools = "*"
+# click = "*"
+# numpy = "*"
+# scipy = "*"
+# mpi4py = "*"
+# netCDF4 = "*"
+# h5py = "*"
+# pyhdf = "*"
+pytz = "*"
+# pandas = "*"
+cachetools = "*"
+# matplotlib = "*"
+numba = "*"
+# texttable = "*"
+pympler = "*"
+humanize = "*"
+munch = "*"
+# Closed source
+#muses-oss = "*"
+#muses-vlidort = "*"
+# Needed by ring executable used by py-retrieve
+libgfortran4-compatiblity = "*"
+#  
+# muses-tools
+# ----------------
+# numpy = "*"
+# scipy = "*"
+poetry = "*"
+#  
+# py-setup-targets
+# ----------------
+# setuptools = "*"
+# click = "*"
+# numpy = "*"
+# netCDF4 = "*"
+# pandas = "*"
+# astropy = "*"
+# Makefile handles installing this first, before py-setup-targets
+# muses-tools = "*"
+#
+# py-thin
+# ------
+# click = "*"
+# click-config-file = "*"
+# pyyaml = "*"
+urllib3 = "*"
+# requests = "*"
+# netCDF4 = "*"
+# numpy = "*"
+cdflib = "*"
+# python-dateutil = "*"
+# astropy = "*"
+# pandas = "*"
+# mpi4py = "*"
+#
+# refractor-framework
+# -------------------
+# numpy = "*"
+# scipy = "*"
+ptpython = "*"
+pytest = "*"
+ghp-import = "*"
+# matplotlib = "*"
+# netCDF4 = "*"
+future = "*"
+# six = "*"
+#
+# refractor-muses
+# ---------------
+# numpy = "*"
+loguru = "*"
+loguru-config = "*"
+# pytest = "*"
+pytest-cov = "*"
+pytest-xdist = "*"
+pytest-loguru = "*"
+docopt-ng = "*"
+cartopy = "*"
+# Not actually a requirement, but used in some unit tests
+seaborn = "*"
+#
+# amuse-me
+# --------
+# click = "*"
+# click-config-file = "*"
+# pyyaml = "*"
+# python-dateutil = "*"
+#
+# Troppy package
+# (note we may install Frank's stuff without troppy and
+# eclair, but for now just include these
+# --------
+# numpy = "*"
+# scipy = "*"
+# Pip only
+#tensorflow = "*"
+#tensorflow_probability = "*"
+#tf_keras = "*"
+scikit-learn = "*"
+xgboost = "*"
+lightgbm = "*"
+# matplotlib = "*"
+imageio = "*"
+jupyterlab = "*"
+
+# Packages needed by tensorflow and friends. We don't directly depend
+# on these, but preferentially get these from conda when we can. This
+# was determined by just doing the pypi installs for the packages we
+# actually need (see below), and seeing what else what pulled in. This
+# list here can be removed or updated at any time - we don't actually
+# directly use any of this we just install it as dependencies for what
+# we do require.
+absl-py = "*"
+astunparse = "*"
+dm-tree = "*"
+google-pasta = "*"
+grpcio = "*"
+keras = "*"
+markdown = "*"
+markdown-it-py = "*"
+mdurl = "*"
+ml_dtypes = "*"
+namex = "*"
+networkx = "*"
+nvtx = "*"
+opt_einsum = "*"
+optree = "*"
+prettytable = "*"
+protobuf = "*"
+rich = "*"
+sympy = "*"
+tensorboard = "*"
+tensorboard-data-server = "*"
+termcolor = "*"
+triton = "*"
+werkzeug = "*"
+
+# Specific versions required by tensorflow and torchviz, so let the pypi
+# handle this
+#flatbuffers = "*"
+#graphviz = "*"
+#libclang = "*"
+
+# Ends up being too restrictive on python version etc if we install from conda,
+# fall back to pypi packages. Note that there are lots of packages that go along with
+# this, a bunch of *nvidia* packages. But let pypi hande this
+#cudatoolkit = "*"
+#cudnn = "*"
+
+
+[pypi-dependencies]
+woudc-extcsv = "*"
+# needed for ML. Note that there are conda packages for these, but we
+# have trouble installing in the older tropess SCF machines. The packages
+# require "_x86_64-microarch-level >=3", which is a way to selecting cpu
+# features. I'm thinking the SCF machines have too old a cpu for this. The
+# pip packages do install ok. There are a number of packages that these need,
+# we can install these automatically with pip but generally we are better getting
+# conda packages. See above where we grab what was needed here.
+tensorflow = "*"
+tensorflow_probability = "*"
+tf_keras = "*"
+torch = "*"
+torchviz = "*"

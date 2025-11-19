@@ -1,0 +1,43 @@
+# Build seems to work better if we pin things to be consistent across different
+# builds
+
+# We don't have any particular python requirement, just that it doesn't change from
+# one package to the next. This is the version in our pixi environment, so we
+# just hold fixed
+python:
+  - ==3.13.7
+  
+# Hold numpy fixed. We don't actually have any particular constraint
+# on the numpy version, but we need to have the same one used for all
+# the packages. 
+numpy:
+  - ==2.3.3
+
+# Swig 4.4.0 just came out, and doesn't seem to work. We'll fix this
+# at some point, but for now restrict ourselves to the older version of swig
+swig:
+  - <4.4.0
+
+# Later versions of cmake aren't backwards compatible with our framework
+# cmake files. We should update these at some point, but for now  just
+# stick to a older version of cmake
+cmake:
+  - <4.0.0
+  
+# We don't require a certain boost version, but we do require this to
+# be consistent. It seems like the packages should pin them automatically,
+# but they don't seem to. So we determined a consistent boost version
+# and grabbed that version. This can be updated at any time
+boost:
+  - ~= 1.84.0
+
+# Don't have any particular compiler version requirement, but we do need
+# this to be consistent. This is the current version
+c_compiler_version:
+  - 14.3.0
+cxx_compiler_version:
+  - 14.3.0
+fortran_compiler_version:
+  - 14.3.0
+
+  

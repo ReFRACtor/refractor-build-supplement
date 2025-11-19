@@ -1,0 +1,14 @@
+===========================================================================
+We include unit tests in the build. I'm pretty sure we want this, it keeps
+us from making a bum package with something that testing could find.
+
+One consequence of this is that we need the merra and absco data used
+by the unit tests. Rather than using some complicated way of passing this
+in, we just do a symbolic link to this directory for absco and merra.
+For example:
+
+ln -s /Users/smyth/absco .
+ln -s /Users/smyth/merra .
+
+Without this data, the unit tests and therefore the build will fail.
+===========================================================================

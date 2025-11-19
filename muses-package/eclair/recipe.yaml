@@ -1,0 +1,74 @@
+context:
+  name: eclair
+  version: 2.2.0
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  - git: git@github-fn.jpl.nasa.gov:fwerner/eclair.git
+    #for now, use a fork so we can update
+    #git: git@github-fn.jpl.nasa.gov:ReFRACtor/eclair.git
+    tag: ${{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  script:
+    - python -m pip install . --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+
+requirements:
+  build:
+    - git
+  host:
+    - pip
+    - numpy ${{ numpy }}
+    - python ${{ python }}
+    # There are a number of pypi packages not currently in conda.
+    # We actually can't track them - this seems to be a limit of the
+    # conda package structure. No way to mark a requirement as coming
+    # from pypi. So we have these here to document the dependency, but commented
+    # out. These packages just need to get installed separately (e.g., the pixi
+    # toml file lists these).
+    - scipy
+    # - tensorflow
+    # - tensorflow_probability
+    # - tf_keras
+    - scikit-learn
+    - xgboost
+    - lightgbm
+    - matplotlib
+    # - torch
+    # - torchviz
+    - jupyterlab
+  run:
+    - pip
+    - numpy ${{ numpy }}
+    - python ${{ python }}
+    # There are a number of pypi packages not currently in conda.
+    # We actually can't track them - this seems to be a limit of the
+    # conda package structure. No way to mark a requirement as coming
+    # from pypi. So we have these here to document the dependency, but commented
+    # out. These packages just need to get installed separately (e.g., the pixi
+    # toml file lists these).
+    - scipy
+    # - tensorflow
+    # - tensorflow_probability
+    # - tf_keras
+    - scikit-learn
+    - xgboost
+    - lightgbm
+    - matplotlib
+    # - torch
+    # - torchviz
+    - jupyterlab
+
+about:
+  summary: This is Frank Werner's Easy Configuration of Large AI Routines (eclair) package
+  license: LicenseRef-UNLICENSED
+  description: |
+    Currently:
+    Copyright (c) 2025, California Institute of Technology ("Caltech"). U.S.
+    Government sponsorship acknowledged. All rights reserved.      
+  

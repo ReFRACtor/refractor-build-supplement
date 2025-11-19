@@ -1,0 +1,49 @@
+context:
+  name: muses-vlidort
+  version: 1.00
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+# Note for this checkout to work here you need to have a public key that
+# matches between jpl github and the JPL cae-artifactory.jpl.nasa.gov.
+# See https://github.jpl.nasa.gov/MUSES-Processing/muses-quick-docs/blob/master/git-lfs.md
+# We have a setup on pistol and rifle as ~/.ssh/config
+source:
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/muses-vlidort.git
+    rev: a52eb865a49981cd0d89d13ab71014f276ef4290
+    
+build:
+  number: 0
+  script:
+    - bash configure.sh
+    - cd build/release
+    - cmake -DCMAKE_BUILD_TYPE=Release ../..
+    - make
+    - mkdir -p $PREFIX/bin
+    - cp vlidort_cli/vlidort_cli $PREFIX/bin
+
+requirements:
+  build:
+    - ${{ compiler('fortran') }}
+    - make
+    # Later versions of cmake aren't backwards compatible with our framework
+    # cmake files. We should update these at some point, but for now  just
+    # stick to a older version of cmake
+    - cmake < 4.0.0
+  host:
+  run:
+
+about:
+  homepage: https://github.jpl.nasa.gov/MUSES-Processing/muses-vlidort
+  summary: MUSES VLIDORT cli
+  license: LicenseRef-UNLICENSED
+  description: |
+    https://github.jpl.nasa.gov/MUSES-Processing/muses-quick-docs
+    Currently:
+    Copyright (c) 2025, California Institute of Technology ("Caltech"). U.S.
+    Government sponsorship acknowledged. All rights reserved.
+    (note VLIDORT is GPL-3.0, but there is additional wrapper code that is
+    JPL specific)
+    

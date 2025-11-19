@@ -1,0 +1,75 @@
+context:
+  name: muses-oss
+  version: 1.03
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+# Note for this checkout to work here you need to have a public key that
+# matches between jpl github and the JPL cae-artifactory.jpl.nasa.gov.
+# See https://github.jpl.nasa.gov/MUSES-Processing/muses-quick-docs/blob/master/git-lfs.md
+# We have a setup on pistol and rifle as ~/.ssh/config
+source:
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/muses-oss.git
+    rev: 0830d167319004c140002a824c3df24ae325f20e
+
+build:
+  number: 0
+  script:
+    - cd fortran
+    - make -j1 MAKE=make CC=$CC FC=$FC FFLAGS="$FFLAGS -fallow-argument-mismatch" CFLAGS="$CFLAGS" SZIPLIBS= ZLIB=$PREFIX SZIP=$PREFIX JPEG=$PREFIX HDF4=$PREFIX HDF5=$PREFIX NC4=$PREFIX slib
+    - cd ..
+    - mkdir -p $PREFIX/include
+    - cp include/*/* $PREFIX/include
+    - mkdir -p $PREFIX/lib
+    - cp lib/*/* $PREFIX/lib
+    
+requirements:
+  build:
+    - ${{ compiler('cxx') }}  
+    - ${{ compiler('c') }}  
+    - ${{ compiler('fortran') }}
+    - make
+  host:
+    # https://github.com/ContinuumIO/anaconda-issues/issues/8812,
+    # can't find -lgomp or -lquadmath without this. Will probably get
+    # fixed at some point and we can remove this
+    - libgcc-ng
+    - hdf4
+    - hdf5
+    - netcdf-cxx-legacy
+    - netcdf-fortran
+    - netcdf4
+    - mpi * mpich
+    # Doesn't actually depend on mpi4py, but without including this
+    # we can get a mpich/openmpi that conflicts with the mpi4py needed by
+    # py-retrieve
+    - python ${{ python }}
+    - mpi4py
+    - libcurl 
+    - krb5 
+    - openssl
+  run:
+    - hdf4
+    - hdf5
+    - netcdf-cxx-legacy
+    - netcdf-fortran
+    - netcdf4
+    - libnetcdf
+    - mpi * mpich
+    - python ${{ python }}
+    - mpi4py
+    - libcurl
+    - krb5
+    - openssl
+
+about:
+  homepage: https://github.jpl.nasa.gov/MUSES-Processing/muses-oss
+  summary: MUSES OSS (Optimal Spectral Sampling) model
+  license: LicenseRef-UNLICENSED
+  description: |
+    https://github.jpl.nasa.gov/MUSES-Processing/muses-quick-docs  
+    Currently:
+    Copyright (c) 2025, California Institute of Technology ("Caltech"). U.S.
+    Government sponsorship acknowledged. All rights reserved.      

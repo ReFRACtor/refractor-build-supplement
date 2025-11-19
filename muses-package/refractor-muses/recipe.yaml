@@ -1,0 +1,47 @@
+context:
+  name: refractor-muses
+  version: 20251119
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  - git: git@github.jpl.nasa.gov:refractor/refractor-muses.git
+    #git: git@github.com:ReFRACtor/refractor-muses.git
+    rev: 20d34e578c04c306f96743b64c7a555f2c89b581
+    
+build:
+  number: 0
+  script:
+    - python -m pip install . --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+
+requirements:
+  build:
+    - git
+  host:
+    - pip
+    - numpy ${{ numpy }}
+    - python ${{ python }}
+    - setuptools
+    - docopt-ng
+    - loguru
+    - loguru-config
+    - py-retrieve
+    - refractor-framework
+  run:
+    - pip
+    - numpy ${{ numpy }}
+    - python ${{ python }}
+    - setuptools
+    - docopt-ng
+    - loguru
+    - loguru-config
+    - py-retrieve
+    - refractor-framework
+    
+about:
+  homepage: https://github.com/ReFRACtor/refractor-muses
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+  summary: ReFRACtor muse package
