@@ -1,0 +1,25 @@
+# For the old ring code in py-retrieve, we need libgfortran4. This may go away at some
+# point, but we just copy over a stashed version of this.
+context:
+  name: libgfortran4-compatiblity
+  version: 1.0
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  
+build:
+  number: 0
+  script:
+    - mkdir -p $PREFIX/lib/
+    - cp $RECIPE_DIR/files/libgfortran.so.4 $PREFIX/lib/
+
+about:
+  summary: This is just libgfortran4
+  license: GPL-3.0-only
+  description: |
+    For the old ring code in py-retrieve, we need libgfortran4. This
+    may go away at some point, but we just copy over a stashed version
+    of this.

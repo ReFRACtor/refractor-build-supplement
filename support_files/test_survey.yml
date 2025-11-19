@@ -1,0 +1,31 @@
+
+# Profile that we add for testing. This is like the global survey, but
+# shrunk in size so we get about 10 soundings rather than the 49 from
+# the full set
+Test_Survey:
+  py_program: "bin/py-thin lat-long" 
+  observation_geolocation:
+    latitude_max: 48
+    latitude_min: 47
+    longitude_max: -146.0
+    longitude_min: -155.0
+  plot_area:
+    latitude_max: 48
+    latitude_min: 47
+    longitude_max: -146.0
+    longitude_min: -155.0
+
+# Second set for tropomi    
+Test_Survey_2:
+  py_program: "bin/py-thin lat-long" 
+  observation_geolocation:
+    latitude_max: -41
+    latitude_min: -41.25
+    longitude_max: -171
+    longitude_min: -172
+  plot_area:
+    latitude_max: -41
+    latitude_min: -42
+    longitude_max: -171
+    longitude_min: -170
+    

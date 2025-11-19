@@ -1,0 +1,21 @@
+#!/bin/bash
+# Restore previous env vars if they were set
+
+unset REFRACTOR_INPUT_PATH
+if [[ -n "$_CONDA_SET_REFRACTOR_INPUT_PATH" ]]; then
+    export REFRACTOR_INPUT_PATH=$_CONDA_SET_REFRACTOR_INPUT_PATH
+    unset _CONDA_SET_REFRACTOR_INPUT_PATH
+fi
+
+unset REFRACTOR_TEMPLATE_PATH
+if [[ -n "$_CONDA_SET_REFRACTOR_TEMPLATE_PATH" ]]; then
+    export REFRACTOR_TEMPLATE_PATH=$_CONDA_SET_REFRACTOR_TEMPLATE_PATH
+    unset _CONDA_SET_REFRACTOR_TEMPLATE_PATH
+fi
+
+unset LUA_PATH
+if [[ -n "$_CONDA_SET_LUA_PATH" ]]; then
+    export LUA_PATH=$_CONDA_SET_LUA_PATH
+    unset _CONDA_SET_LUA_PATH
+fi
+

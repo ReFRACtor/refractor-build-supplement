@@ -1,0 +1,311 @@
+context:
+  name: refractor-pipeline
+  version: 20251011
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+# Current list of pipeline:
+#
+# amuse-config py-combine py-generate-targets py-geolocate amuse-me
+# py-pair py-thin py-level3 py-plot py-setup-targets muses-tools
+# py-retrieve refractor-muses refractor-framework
+#
+# We install everything except for py-retrieve refractor-muses refractor-framework
+source:
+  # amuse-config
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/amuse-config.git
+    rev: 82839f081fcc861334ac12472a04b00e1716f8c6
+    target_directory: amuse-config
+  # py-combine
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/py-combine.git
+    rev: c1246d8fa2fd7a30cb656742c5ee53f87e439e4f
+    target_directory: py-combine
+  # py-generate-targets
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/py-generate-targets.git
+    rev: eb0e29b4ddca96c66ab70c271ddeecc78bdfd30c
+    target_directory: py-generate-targets
+  # py-geolocate
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/py-geolocate.git
+    rev: f7904d55d4307839c1db6943063596cde31ef520
+    target_directory: py-geolocate
+  # amuse-me
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/amuse-me.git
+    rev: 40290833b0ede7eb7e71e5ef0635727cfde0a522
+    target_directory: amuse-me
+  # py-pair
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/py-pair.git
+    rev: 2652d57d84d1ba207fca4dacfbbcd0ded5509f60
+    target_directory: py-pair
+  # py-thin
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/py-thin.git
+    rev: 3e13ce8f2cfc8c60349fb8b7d0ece7f2e7a5333a
+    target_directory: py-thin
+  # py-level3
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/py-level3.git
+    rev: 0fb94e6b1955eb37ec4a657b07391b85cd3357ce
+    target_directory: py-level3
+  # py-plot
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/py-plot.git
+    rev: bb9adc2e1e9fe5b1e661e38a771097fb81ab45a4
+    target_directory: py-plot
+  # py-setup-targets
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/py-setup-targets.git
+    rev: e7f7356f8dbf2f3dddee68903c1e701ae1aeb638
+    target_directory: py-setup-targets
+  # muses-tools  
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/muses-tools.git
+    rev: e6efb96d57c367e99ba3d68c193d6835e826040a
+    target_directory: muses-tools
+
+build:
+  number: 0
+  script:
+    - python -m pip install ./amuse-config --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+    - python -m pip install ./py-combine --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+    - python -m pip install ./py-generate-targets --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+    - python -m pip install ./py-geolocate --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+    - python -m pip install ./amuse-me --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+    - python -m pip install ./py-pair --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+    - python -m pip install ./py-thin --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+    - python -m pip install ./py-level3 --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+    - python -m pip install ./py-plot --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+    - python -m pip install ./py-setup-targets --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+    - python -m pip install ./muses-tools --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+
+requirements:
+  build:
+    - git
+  host:
+    - pip
+    - numpy ${{ numpy }}
+    - python ${{ python }}
+    # amuse-config
+    # -------------
+    - click
+    - jinja2
+    - texttable
+    - click-config-file
+    - pyyaml
+    # 
+    # py-combine
+    # ----------
+    - click
+    - click-config-file
+    - mpi4py
+    - netCDF4
+    - numpy
+    #
+    # py-generate-targets
+    # -------------------
+    - click
+    - click-config-file
+    - numpy
+    - netCDF4
+    - pandas
+    - astropy
+    #
+    # py-geolocate
+    # ------------
+    - click
+    - python-dateutil
+    - numpy
+    - scipy
+    - netCDF4
+    - h5py
+    - pyhdf
+    - untangle
+    - astropy
+    # woudc-extcsv = "*"
+    - pandas
+    # py-level3
+    # ---------
+    - click
+    - mpi4py
+    - numpy
+    - scipy
+    - netCDF4
+    #
+    # py-pair
+    # -------
+    - click
+    - click-config-file
+    - pyyaml
+    - numpy
+    - pandas
+    - netCDF4
+    - mock
+    - h5py
+    #
+    # py-plot
+    # -------
+    - click
+    - mpi4py
+    - numpy
+    - netCDF4
+    - matplotlib
+    - basemap 
+    - jinja2
+    - cairocffi
+    - pycairo 
+    #  
+    # muses-tools
+    # ----------------
+    - numpy
+    - scipy
+    - poetry
+    #  
+    # py-setup-targets
+    # ----------------
+    - setuptools
+    - click
+    - numpy
+    - netCDF4
+    - pandas
+    - astropy
+    # py-thin
+    # ------
+    - click
+    - click-config-file
+    - pyyaml
+    - urllib3 
+    - requests
+    - netCDF4
+    - numpy 
+    - cdflib
+    - python-dateutil 
+    - astropy
+    - pandas
+    - mpi4py
+    #
+    # amuse-me
+    # --------
+    - click
+    - click-config-file
+    - pyyaml
+    - python-dateutil
+  run:
+    - pip
+    - numpy ${{ numpy }}
+    - python ${{ python }}
+    # amuse-config
+    # -------------
+    - click
+    - jinja2
+    - texttable
+    - click-config-file
+    - pyyaml
+    # 
+    # py-combine
+    # ----------
+    - click
+    - click-config-file
+    - mpi4py
+    - netCDF4
+    - numpy
+    #
+    # py-generate-targets
+    # -------------------
+    - click
+    - click-config-file
+    - numpy
+    - netCDF4
+    - pandas
+    - astropy
+    #
+    # py-geolocate
+    # ------------
+    - click
+    - python-dateutil
+    - numpy
+    - scipy
+    - netCDF4
+    - h5py
+    - pyhdf
+    - untangle
+    - astropy
+    # woudc-extcsv = "*"
+    - pandas
+    # py-level3
+    # ---------
+    - click
+    - mpi4py
+    - numpy
+    - scipy
+    - netCDF4
+    #
+    # py-pair
+    # -------
+    - click
+    - click-config-file
+    - pyyaml
+    - numpy
+    - pandas
+    - netCDF4
+    - mock
+    - h5py
+    #
+    # py-plot
+    # -------
+    - click
+    - mpi4py
+    - numpy
+    - netCDF4
+    - matplotlib
+    - basemap 
+    - jinja2
+    - cairocffi
+    - pycairo 
+    #  
+    # muses-tools
+    # ----------------
+    - numpy
+    - scipy
+    - poetry
+    #  
+    # py-setup-targets
+    # ----------------
+    - setuptools
+    - click
+    - numpy
+    - netCDF4
+    - pandas
+    - astropy
+    # py-thin
+    # ------
+    - click
+    - click-config-file
+    - pyyaml
+    - urllib3 
+    - requests
+    - netCDF4
+    - numpy 
+    - cdflib
+    - python-dateutil 
+    - astropy
+    - pandas
+    - mpi4py
+    #
+    # amuse-me
+    # --------
+    - click
+    - click-config-file
+    - pyyaml
+    - python-dateutil
+    
+    
+about:
+  summary: A number of the muses python libraries
+  license: LicenseRef-UNLICENSED
+  description: |
+    Most of the amuse-me pipeline is code that doesn't change much.
+    We have one package just to install this easily. This is everything
+    *except* refractor-framework, refractor-muses, and py-retrieve. This
+    other packages get updated at a different cadence, so we treat those
+    as separate.
+
+    Currently:
+    Copyright (c) 2025, California Institute of Technology ("Caltech"). U.S.
+    Government sponsorship acknowledged. All rights reserved.      
+    

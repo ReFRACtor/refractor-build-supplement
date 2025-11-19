@@ -1,0 +1,152 @@
+context:
+  name: refractor-framework
+  version: 20250518
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  - git: git@github.jpl.nasa.gov:refractor/framework.git
+    # git: git@github.com:ReFRACtor/framework.git
+    # tag: ${{ version }}
+    rev: 7c2cb1f27e2fd97ba291c1302dfe601b83842ce4
+
+build:
+  number: 0
+  script:
+    - cat $RECIPE_DIR/README_build
+    # Note that the various libraries are installed in $PREFIX which isn't
+    # searched, so point to these.
+    # Note that the merra and absco directories are needed for testing. We assume
+    # these have been linked in to the recipes directory
+    - cmake -DCMAKE_INSTALL_PREFIX=$PREFIX $SRC_DIR -DCMAKE_INSTALL_LIBDIR=lib -DBOOST_ROOT=$PREFIX -DGSL_ROOT_DIR=$PREFIX -DBLITZ_DIR=$PREFIX -DFIRST_ORDER_DIR=$PREFIX -DLIDORT_DIR=$PREFIX -DLUABIND_ROOT_DIR=$PREFIX -DTWOSTREAM_DIR=$PREFIX -DABSCO_DIR=$RECIPE_DIR/absco -DMERRA_DIR=$RECIPE_DIR/merra
+    - make -j$CPU_COUNT -k all || true
+    - make -j$CPU_COUNT all
+    - make install
+    # Run all the tests, so we can make sure we aren't installing a bad package.
+    # Pretty sure we want to do this, we can turn this off if it becomes an issue
+    # Note that this requires the merra and absco data.
+    # Only needed for testing
+    - make -j${CPU_COUNT} all_test CTEST_PARALLEL_LEVEL=${CPU_COUNT} CTEST_OUTPUT_ON_FAILURE=1 
+    # Replace any library in the build directory with the prefix directory
+    - |
+      if [ `uname` = 'Linux' ]; then
+        sed "s|${BUILD_PREFIX}|${PREFIX}|g" -i "$PREFIX/cmake/RefractorTargets.cmake";
+      else    
+        sed -i '' "s|${BUILD_PREFIX}|${PREFIX}|g" "$PREFIX/cmake/RefractorTargets.cmake";
+      fi
+    - cat $RECIPE_DIR/extra_for_setup $PREFIX/setup_fp_env.sh > $PREFIX/setup_fp_env.sh.temp
+    - mv -f $PREFIX/setup_fp_env.sh.temp $PREFIX/setup_fp_env.sh
+    - mkdir -p $PREFIX/etc/conda/activate.d
+    - mkdir -p $PREFIX/etc/conda/deactivate.d
+    - cp $RECIPE_DIR/scripts/activate.sh $PREFIX/etc/conda/activate.d/framework-activate.sh
+    - cp $RECIPE_DIR/scripts/deactivate.sh $PREFIX/etc/conda/deactivate.d/framework-deactivate.sh
+
+requirements:
+  build:
+    - ${{ compiler('cxx') }}  
+    - ${{ compiler('c') }}  
+    - ${{ compiler('fortran') }}
+    - cmake ${{ cmake }}
+    - pkg-config
+    - swig ${{ swig }}
+    - doxygen
+  host:
+    # https://github.com/ContinuumIO/anaconda-issues/issues/8812,
+    # can't find -lgomp or -lquadmath without this. Will probably get
+    # fixed at some point and we can remove this
+    - libgcc-ng
+    - python ${{ python }}
+    - numpy ${{ numpy }}
+    - boost ${{ boost }}
+    - pip
+    - gsl
+    - eigen
+    - jsonpickle
+    - libblitz
+    - lidort
+    - lidort-twostream
+    - hdf5
+    - netcdf4
+    # Needed for testing
+    - matplotlib
+    - filelock
+    - pytest
+    - statsmodels
+    - pytest-xdist
+    - pytest-cov
+    - pytest-runner
+    - muses-oss
+    - ipython
+    - jupyter
+    - jupyterlab
+    - ipympl
+    - ptpython
+  run:
+    - python ${{ python }}
+    - numpy ${{ numpy }}
+    - boost ${{ boost }}
+    - pip
+    - gsl
+    - eigen
+    - jsonpickle
+    - libblitz
+    - lidort
+    - lidort-twostream
+    - hdf5
+    - netcdf4
+    - matplotlib
+    - ipython
+    - jupyter
+    - jupyterlab
+    - ipympl
+    - ptpython
+    - libgcc-ng
+    - muses-oss
+    
+about:
+  homepage: https://github.com/ReFRACtor/framework
+  license: BSD-3-Clause
+  license_file: LICENSE.txt
+  summary: RT Retrieval Framework
+  description: |
+    This software (NASA NTR-49044) retrieves a set of
+    atmospheric/surface/instrument parameters from a simultaneous fit
+    to spectra from multiple absorption bands.  The software uses an
+    iterative, non-linear retrieval technique (optimal
+    estimation). After the retrieval process has converged, the
+    software performs an error analysis. The products of the software
+    include all quantities needed to understand the information
+    content of the measurement, its uncertainty, and its dependence on
+    interfering atmospheric properties.
+
+    The software provides a flexible, efficient, and accurate tool to
+    retrieve the atmospheric composition from near-infrared
+    spectra. Its unique features are:
+
+      * Spectra from ground-based or space-based measurement with
+      arbitrary observation geometry can be analyzed.
+
+      * The retrieved parameters can be chosen from a large set of
+      atmospheric (e.g., volume mixing ratio of gases or aerosol
+      optical depth), surface (e.g., Lambertian reflection), and
+      instrument (e.g., spectral shift or instrument line shape
+      parameters) parameters.
+
+      * The software uses an accurate, state-of-the-art,
+      multiple-scattering radiative transfer code combined with an
+      efficient polarization approximation to simulate measured
+      spectra.
+
+      * The software enables fast and highly accurate simulations of
+      broad spectral ranges by an optional parallelization of the
+      frequency processing in the radiative transfer model.
+
+    The software was originally created for JPL's OCO, ACOS and OCO-2
+    projects for Level-2 processing.
+
+    doc_url: https://refractor.github.io/documentation
+    doc_source_url: https://github.com/ReFRACtor/documentation
+    
+    

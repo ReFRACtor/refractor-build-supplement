@@ -1,0 +1,59 @@
+context:
+  name: lidort
+  version: 3.8
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+# Version isn't overly important, since the thirdparty code doesn't change much.
+# Just make sure a new enough version to have the latest version of the thirdparty
+# code.
+source:
+  - git: git@github.jpl.nasa.gov:refractor/framework.git
+    tag: conda-refractor-framework-20250131
+
+build:
+  # Update version for gfortran in build
+  number: 1
+  script:
+    - cmake -DBUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=$PREFIX $SRC_DIR/thirdparty/lidort-3.8 -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_Fortran_MODULE_DIRECTORY=$PREFIX/include
+    - make -j$CPU_COUNT all
+    - make install
+    
+requirements:
+  build:
+    - ${{ compiler('c') }}  
+    - ${{ compiler('cxx') }}
+    - ${{ compiler('fortran') }}
+    # Later versions of cmake aren't backwards compatible with our framework
+    # cmake files. We should update these at some point, but for now  just
+    # stick to a older version of cmake
+    - cmake < 4.0.0
+  host:
+    # https://github.com/ContinuumIO/anaconda-issues/issues/8812,
+    # can't find -lgomp or -lquadmath without this. Will probably get
+    # fixed at some point and we can remove this
+    - libgcc-ng
+  run:
+    # https://github.com/ContinuumIO/anaconda-issues/issues/8812,
+    # can't find -lgomp or -lquadmath without this. Will probably get
+    # fixed at some point and we can remove this
+    - libgcc-ng
+
+about:
+  homepage: http://www.rtslidort.com/mainprod_lidort.html
+  summary: LIDORT Radiative Transfer
+  license: GPL-3.0-only
+  description: |
+    LIDORT is a multiple-scattering multi-layer discrete
+    ordinate scattering code with a simultaneous linearization
+    facility for the generation of both radiances and analytic
+    Jacobians (intensity partial derivatives with respect to any
+    atmospheric or surface parameter). The model will generate
+    upwelling and/or down-welling output for any number of geometrical
+    configurations and at any atmospheric level. Linearization is
+    available for atmospheric profile Jacobians or atmospheric
+    bulk-property Jacobians such as total column amounts, as well as
+    for surface properties.
+  

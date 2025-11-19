@@ -1,0 +1,24 @@
+# Build and install framework into conda.
+#
+# Source this file to run cmake, then use ninja to build (see note at bottom)
+#
+# Make sure to activate the conda environment first, before building this
+# (e.g. "conda activate ~/muses/muses-env" or wherever you installed your
+# conda environment)
+#
+# If you previously installed the refractor-framework package, you
+# should uninstall it first (conda uninstall refractor-framework). It is
+# not necessary to recreate the conda environment, unless you otherwise want to.
+#
+# Note there isn't an uninstall if you want to remove the built framework
+# from the conda environment, but cmake creates a manifest when you install
+# and you use that to remove with:
+#
+# \rm $(cat install_manifest.txt)
+#
+cmake ../../framework -DABSCO_DIR=$MUSES_ABSCO_DIR -G Ninja -DCMAKE_MAKE_PROGRAM=$CONDA_PREFIX/bin/ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_BUILD_TYPE=Debug
+# Don't think we want this, it is confusing that some files are editable but all the
+# swig stuff isn't. But we can try this out some time and see if we should change
+# our mind.
+#cmake ../../framework -DABSCO_DIR=$MUSES_ABSCO_DIR -G Ninja -DCMAKE_MAKE_PROGRAM=$CONDA_PREFIX/bin/ninja -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DCMAKE_BUILD_TYPE=Debug -DPIP_DEVELOP_MODE=On
+# Run with ninja all && ninja install && CTEST_PARALLEL_LEVEL=20 CTEST_OUTPUT_ON_FAILURE=1 ninja all_test

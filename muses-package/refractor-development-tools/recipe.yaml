@@ -1,0 +1,70 @@
+context:
+  name: refractor-development-tools
+  version: 1.07
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  # No source, the is a meta package
+  
+build:
+  # Restrict version of swig
+  # number: 1
+  # Remove non open sourced code
+  number: 2
+
+requirements:
+  build:
+  host:
+  run:
+    - ${{ compiler('cxx') }}  
+    - ${{ compiler('c') }}  
+    - ${{ compiler('fortran') }}
+    - cmake ${{ cmake }}
+    - pkg-config
+    - gdb
+    - python ${{ python }}
+    - numpy ${{ numpy }}
+    - boost ${{ boost }}
+    - pip
+    - ninja
+    - swig ${{ swig }}
+    - doxygen
+    - gsl
+    - eigen
+    - jsonpickle
+    - libblitz
+    - hdf5
+    - netcdf4
+    - python
+    - jupyter
+    - jupyterlab
+    - ipympl
+    - matplotlib
+    - ptpython
+    - pytest
+    - statsmodels
+    - pytest-xdist
+    - pytest-cov
+    - pytest-runner
+    - pytz
+    - h5py
+    # Our packages, that we always want installed
+    - lidort
+    - lidort-twostream
+    - libgfortran4-compatiblity
+    # Remove, since not open sourced
+    # - muses-oss
+    # - muses-vlidort
+    
+    
+about:
+  homepage: https://github.com/ReFRACtor/framework
+  summary: This is a metapackage that installs the tools to build the RT Retrieval Framework
+  license: BSD-3-Clause
+  description: |
+    license_url: https://github.com/ReFRACtor/framework/blob/master/LICENSE.txt
+    https://refractor.github.io/documentation
+    https://github.com/ReFRACtor/documentation

@@ -1,0 +1,74 @@
+context:
+  name: troppy
+  version: 1.10.1
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  - git: git@github-fn.jpl.nasa.gov:fwerner/troppy.git
+    #git: git@github-fn.jpl.nasa.gov:ReFRACtor/troppy.git
+    tag: ${{ version }}
+
+build:
+  number: 0
+  noarch: generic
+  script:
+    - python -m pip install . --no-deps --ignore-installed --no-cache-dir --no-index -vvv
+
+requirements:
+  build:
+    - git
+  host:
+    - pip
+    - numpy ${{ numpy }}
+    - python ${{ python }}
+    # There are a number of pypi packages not currently in conda.
+    # We actually can't track them - this seems to be a limit of the
+    # conda package structure. No way to mark a requirement as coming
+    # from pypi. So we have these here to document the dependency, but commented
+    # out. These packages just need to get installed separately (e.g., the pixi
+    # toml file lists these).
+    - scipy
+    # - tensorflow
+    # - tensorflow_probability
+    # - tf_keras
+    - scikit-learn
+    - xgboost
+    - lightgbm
+    - matplotlib
+    - imageio
+    - jupyterlab
+    - eclair
+  run:
+    - pip
+    - numpy ${{ numpy }}
+    - python ${{ python }}
+    # There are a number of pypi packages not currently in conda.
+    # We actually can't track them - this seems to be a limit of the
+    # conda package structure. No way to mark a requirement as coming
+    # from pypi. So we have these here to document the dependency, but commented
+    # out. These packages just need to get installed separately (e.g., the pixi
+    # toml file lists these).
+    - scipy
+    # - tensorflow
+    # - tensorflow_probability
+    # - tf_keras
+    - scikit-learn
+    - xgboost
+    - lightgbm
+    - matplotlib
+    - imageio
+    - jupyterlab
+    - eclair
+
+about:
+  summary: This is Frank Werner's Python routines for TROPESS task (troppy)
+  license: LicenseRef-UNLICENSED
+  description: |
+    Currently:
+    Copyright (c) 2025, California Institute of Technology ("Caltech"). U.S.
+    Government sponsorship acknowledged. All rights reserved.      
+    
+  
