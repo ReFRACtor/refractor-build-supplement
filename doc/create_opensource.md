@@ -2,7 +2,7 @@ Create opensource
 =================
 
 We have a completely different repository, so we don't have any closed source stuff
-in the history. Located on [github](git@github.com:ReFRACtor/refractor-build-supplement.git).
+in the history. Located on [github](https://github.com/ReFRACtor/refractor-build-supplement).
 
 We use the file rsync_public.sh to copy files over to a clone of the public github. We
 just copy files, none of the git history.  Run rsync_public.sh and then we can commit

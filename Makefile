@@ -370,13 +370,11 @@ BASE_DOCKER=oraclelinux:8
 docker-public-build:
 	docker run -t -d --cidfile=docker_run.id $(BASE_DOCKER) /bin/bash
 	echo "Install pixi"
-	docker exec $$(cat docker_run.id) bash --login -c "dnf install -y git make && curl -fsSL https://pixi.sh/install.sh | sh"
+	docker exec $$(cat docker_run.id) bash --login -c "dnf install -y git git-lfs make && curl -fsSL https://pixi.sh/install.sh | sh"
 	echo "Download build supplement (public open source version)"
 	docker exec $$(cat docker_run.id) bash --login -c "mkdir /home/workdir && cd /home/workdir && git clone $(REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_URL) refractor-build-supplement && cd refractor-build-supplement && curl -fsSL $(MUSES_CONDA_CHANNEL_OPEN_SOURCE_TAR_URL) | tar -x"
-	echo "Download refractor-muses (latest version)"
-	docker exec $$(cat docker_run.id) bash --login -c "mkdir /home/muses && cd /home/muses && git clone $(REFRACTOR_MUSES_OPEN_SOURCE_URL) refractor-muses"
-	echo "Install pixi environment"
-	docker exec $$(cat docker_run.id) bash --login -c "cd /home/workdir/refractor-build-supplement && make REFRACTOR_MUSES_FROM_SOURCE=yes USE_CLOSED_SOURCE=no MUSES_DIR=/home/muses install-current"
+	echo "Install pixi environment, with latest refractor-muses"
+	docker exec $$(cat docker_run.id) bash --login -c "cd /home/workdir/refractor-build-supplement && make REFRACTOR_MUSES_URL=$(REFRACTOR_MUSES_OPEN_SOURCE_URL) REFRACTOR_MUSES_FROM_SOURCE=yes USE_CLOSED_SOURCE=no MUSES_DIR=/home/muses install-current"
 	echo "Set up to automatically start pixi environment"
 	docker exec $$(cat docker_run.id) bash --login -c "pixi shell-hook --shell bash --manifest-path /home/muses/muses-env > /etc/profile.d/pixi.sh"
 	docker commit $$(cat docker_run.id) refractor-public:latest
@@ -390,8 +388,8 @@ docker-public-build:
 
 docker-public-update:
 	docker run -t -d --cidfile=docker_run.id refractor-public:latest /bin/bash
-	echo "Updating"
-	docker exec $$(cat docker_run.id) bash --login -c "cd /home/muses/refractor-muses && git pull origin master && pip install /home/muses/refractor-muses --no-cache-dir --no-build-isolation --no-dependencies"
+	echo "Updating refractor-muses"
+	docker exec $$(cat docker_run.id) bash --login -c "cd /home/workdir/refractor-build-supplement && make REFRACTOR_MUSES_URL=$(REFRACTOR_MUSES_OPEN_SOURCE_URL) REFRACTOR_MUSES_FROM_SOURCE=yes USE_CLOSED_SOURCE=no MUSES_DIR=/home/muses install-update"
 	docker commit $$(cat docker_run.id) refractor-public:latest
 	docker container stop $$(cat docker_run.id)
 	rm docker_run.id
@@ -409,7 +407,7 @@ docker-public-test:
 # remember the syntax
 # ---------------------------------------------------------------------
 
-docker-public-build-start:
+docker-public-start:
 	docker run -it --workdir /home/workdir refractor-public:latest /bin/bash
 
 # When a failure occurs, can connect to the docker instance used in a rule
