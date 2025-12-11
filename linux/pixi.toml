@@ -145,8 +145,7 @@ humanize = "*"
 munch = "*"
 muses-oss = "*"
 muses-vlidort = "*"
-# Needed by ring executable used by py-retrieve
-libgfortran4-compatiblity = "*"
+muses-rrs = "*"
 #  
 # muses-tools
 # ----------------
@@ -201,6 +200,9 @@ loguru-config = "*"
 pytest-cov = "*"
 pytest-xdist = "*"
 pytest-loguru = "*"
+pytest-profiling = "*"
+snakeviz = "*"
+pytest-sugar = "*"
 docopt-ng = "*"
 cartopy = "*"
 # Not actually a requirement, but used in some unit tests

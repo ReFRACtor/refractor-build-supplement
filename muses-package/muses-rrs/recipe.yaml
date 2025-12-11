@@ -1,6 +1,6 @@
 context:
-  name: muses-vlidort
-  version: 1.00
+  name: muses-rrs
+  version: 1.01
 
 package:
   name: ${{ name }}
@@ -11,18 +11,20 @@ package:
 # See https://github.jpl.nasa.gov/MUSES-Processing/muses-quick-docs/blob/master/git-lfs.md
 # We have a setup on pistol and rifle as ~/.ssh/config
 source:
-  - git: git@github.jpl.nasa.gov:MUSES-Processing/muses-vlidort.git
-    rev: a52eb865a49981cd0d89d13ab71014f276ef4290
+  - git: git@github.jpl.nasa.gov:MUSES-Processing/muses-rrs.git
+    rev: 80769e91ab13dfce56b51b90203a3074359e325f
     
 build:
   number: 0
   script:
     - bash configure.sh
+    # CMake looking for .f90, not .F90
+    - mv lib/M_CLI2/src/M_CLI2.F90 lib/M_CLI2/src/M_CLI2.f90
     - cd build/release
     - cmake -DCMAKE_BUILD_TYPE=Release ../..
     - make
     - mkdir -p $PREFIX/bin
-    - cp vlidort_cli/vlidort_cli $PREFIX/bin
+    - cp ring/ring_cli $PREFIX/bin
 
 requirements:
   build:
@@ -32,14 +34,12 @@ requirements:
   run:
 
 about:
-  homepage: https://github.jpl.nasa.gov/MUSES-Processing/muses-vlidort
-  summary: MUSES VLIDORT cli
+  homepage: https://github.jpl.nasa.gov/MUSES-Processing/muses-rrs
+  summary: MUSES Ring cli
   license: LicenseRef-UNLICENSED
   description: |
     https://github.jpl.nasa.gov/MUSES-Processing/muses-quick-docs
     Currently:
     Copyright (c) 2025, California Institute of Technology ("Caltech"). U.S.
     Government sponsorship acknowledged. All rights reserved.
-    (note VLIDORT is GPL-3.0, but there is additional wrapper code that is
-    JPL specific)
     

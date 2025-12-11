@@ -164,7 +164,7 @@ MUSES_TEST_RUN_REFRACTOR_DIR=$(MUSES_DIR)/muses-test-run-refractor
 
 mkfile_dir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-REFRACTOR_BUILD_SUPPLEMNT_OPEN_SOURCE_VERSION=v0.1
+REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_VERSION=v0.1
 # URLs for repos
 # ---------------------------------------------------------------------------
 AMUSE_CONFIG_URL=git@github.jpl.nasa.gov:MUSES-Processing/amuse-config.git
@@ -188,7 +188,7 @@ REFRACTOR_TEST_DATA_URL=git@github.jpl.nasa.gov:refractor/refractor_test_data.gi
 ECLAIR_URL=git@github-fn.jpl.nasa.gov:ReFRACtor/eclair.git
 TROPPY_URL=git@github-fn.jpl.nasa.gov:ReFRACtor/troppy.git
 REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_URL=https://github.com/ReFRACtor/refractor-build-supplement.git
-MUSES_CONDA_CHANNEL_OPEN_SOURCE_TAR_URL=https://github.com/ReFRACtor/refractor-build-supplement/releases/download/$(REFRACTOR_BUILD_SUPPLEMNT_OPEN_SOURCE_VERSION)/muses-conda-channel.tar
+MUSES_CONDA_CHANNEL_OPEN_SOURCE_TAR_URL=https://github.com/ReFRACtor/refractor-build-supplement/releases/download/$(REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_VERSION)/muses-conda-channel.tar
 REFRACTOR_MUSES_OPEN_SOURCE_URL=https://github.com/ReFRACtor/refractor-muses.git
 
 # Include a Makefile.local to override things, if found
@@ -301,6 +301,13 @@ test-airs-py-retrieve: $(TEST_PIPELINE_CONFIG)
 	-rm -r $(MUSES_TEST_RUN_PY_RETRIEVE_DIR)/airs $(MUSES_TEST_RUN_PY_RETRIEVE_DIR)/airs_omi $(MUSES_TEST_RUN_PY_RETRIEVE_DIR)/omi
 	$(PIXI_RUN) amuse-me --pipeline-config $(TEST_PIPELINE_CONFIG)/config.yml --sensor-set AIRS_OMI --profile Test_Survey --date 2016-04-01 --output $(MUSES_TEST_RUN_PY_RETRIEVE_DIR) --clear-output --OSP $(MUSES_OSP_PATH) --programs in-path --hosts localhost --tasks-per-host 8 --python --start-step geolocate --end-step plot
 	$(MAKE) compare-airs-py-retrieve
+
+# To run actual py-retrieve (for some backwards testing) do:
+# 1. Edit retrive.yml in $(TEST_PIPELINE_CONFIG) to change refractor-retrieve to py-retrieve
+# 2. Add MUSES_VLIDORT_CLI and MUSES_RING_CLI environment variables. Note despite the
+#    name, these actually go to a directory. So something like:
+#
+# MUSES_RING_CLI=$CONDA_PREFIX/bin MUSES_VLIDORT_CLI=$CONDA_PREFIX/bin amuse-me --pipeline-config $(TEST_PIPELINE_CONFIG)/config.yml --sensor-set AIRS_OMI --profile Test_Survey --date 2016-04-01 --output $(MUSES_TEST_RUN_PY_RETRIEVE_DIR) --clear-output --OSP $(MUSES_OSP_PATH) --programs in-path --hosts localhost --tasks-per-host 8 --python --start-step geolocate --end-step plot
 
 test-cris-py-retrieve: $(TEST_PIPELINE_CONFIG)
 	$(MKDIR_P) $(MUSES_TEST_RUN_PY_RETRIEVE_DIR)
@@ -501,6 +508,7 @@ build-all-package:
 	$(MAKE) build-lidort-twostream
 	$(MAKE) build-muses-oss
 	$(MAKE) build-muses-vlidort
+	$(MAKE) build-muses-rrs
 	$(MAKE) build-refractor-development-tools
 	$(MAKE) build-refractor-framework
 	$(MAKE) build-refractor-pipeline
@@ -694,7 +702,7 @@ $(ENV_DIR): $(PIXI_FILE_DEPEND)
 	rm $(ENV_DIR)/pixi.toml
 	$(MAKE) $(PIXI_FILE_INSTALL)
 	$(PIXI_INSTALL_COMMAND)
-	$(PIXI_RUN) bash -c "\$$CONDA_PREFIX/bin/conda env config vars set REFRACTOR_INPUT_PATH=\$$CONDA_PREFIX/etc/refractor/input MUSES_ABSCO_DIR=$(MUSES_ABSCO_DIR) MUSES_OSP_PATH=$(MUSES_OSP_PATH) MUSES_JOSH_OSP_PATH=$(MUSES_JOSH_OSP_PATH) MUSES_GMAO_PATH=$(MUSES_GMAO_PATH)"
+	$(PIXI_RUN) bash -c "\$$CONDA_PREFIX/bin/conda env config vars set REFRACTOR_INPUT_PATH=\$$CONDA_PREFIX/etc/refractor/input MUSES_ABSCO_DIR=$(MUSES_ABSCO_DIR) MUSES_OSP_PATH=$(MUSES_OSP_PATH) MUSES_JOSH_OSP_PATH=$(MUSES_JOSH_OSP_PATH) MUSES_GMAO_PATH=$(MUSES_GMAO_PATH) MUSES_RING_CLI=\$$CONDA_PREFIX/bin MUSES_VLIDORT_CLI=\$$CONDA_PREFIX/bin"
 	if [ -n "$(EXTRA_INSTALL)" ]; then \
 	  cd $(ENV_DIR) && pixi add $(EXTRA_INSTALL); \
 	fi

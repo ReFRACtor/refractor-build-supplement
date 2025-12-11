@@ -13,7 +13,9 @@ build:
   # Restrict version of swig
   # number: 1
   # Remove non open sourced code
-  number: 2
+  # number: 2
+  # Remove libgfortran4
+  number: 3
 
 requirements:
   build:
@@ -54,10 +56,10 @@ requirements:
     # Our packages, that we always want installed
     - lidort
     - lidort-twostream
-    - libgfortran4-compatiblity
     # Remove, since not open sourced
     # - muses-oss
     # - muses-vlidort
+    # - muses-rrs
     
     
 about:

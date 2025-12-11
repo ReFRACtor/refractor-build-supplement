@@ -1,6 +1,6 @@
 context:
   name: py-retrieve
-  version: 20251011
+  version: 20251206
 
 package:
   name: ${{ name }}
@@ -8,7 +8,7 @@ package:
 
 source:
   - git: git@github.jpl.nasa.gov:MUSES-Processing/py-retrieve.git
-    rev: d75e4c888fb1a6d67c5b53ef480a8e393666dd65
+    rev: 9f80babfd740bf642aee947c4ee0776d064c1207
     
 build:
   number: 0
@@ -30,9 +30,9 @@ requirements:
     - netCDF4
     - h5py
     - pyhdf
-    - libgfortran4-compatiblity
     - muses-oss
     - muses-vlidort
+    - muses-rrs
   run:
     - pip
     - numpy ${{ numpy }}
@@ -45,20 +45,16 @@ requirements:
     - netCDF4
     - h5py
     - pyhdf
-    - libgfortran4-compatiblity
     - muses-oss
     - muses-vlidort
+    - muses-rrs
     
     
 about:
   summary: A number of the muses python libraries
   license: LicenseRef-UNLICENSED
   description: |
-    Most of the amuse-me pipeline is code that doesn't change much.
-    We have one package just to install this easily. This is everything
-    *except* refractor-framework, refractor-muses, and py-retrieve. This
-    other packages get updated at a different cadence, so we treat those
-    as separate.
+    Py-retrieve code
 
     Currently:
     Copyright (c) 2025, California Institute of Technology ("Caltech"). U.S.

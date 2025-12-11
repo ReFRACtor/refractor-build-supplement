@@ -1,6 +1,6 @@
 context:
   name: refractor-framework
-  version: 20250518
+  version: 20251205
 
 package:
   name: ${{ name }}
@@ -10,11 +10,10 @@ source:
   - git: git@github.jpl.nasa.gov:refractor/framework.git
     # git: git@github.com:ReFRACtor/framework.git
     # tag: ${{ version }}
-    rev: 7c2cb1f27e2fd97ba291c1302dfe601b83842ce4
+    rev: cd07269e116b16858e811c15318847dbcd0ff4fb
 
 build:
-  # Remove muses-oss dependency, not sure why it was there is the first place.
-  number: 1
+  number: 0
   script:
     - cat $RECIPE_DIR/README_build
     # Note that the various libraries are installed in $PREFIX which isn't

@@ -1,9 +1,0 @@
-# For the old ring code in py-retrieve, we need libgfortran4. This may go away at some
-# point, but we just copy over a stashed version of this.
-package:
-  name: 'libgfortran4-compatiblity'
-  version: 1.0
-
-build:
-  number: 0
-  
