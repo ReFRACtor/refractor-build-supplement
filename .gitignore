@@ -17,4 +17,7 @@ muses-conda-channel.tar
 # Test directories, that are local
 muses-package/refractor-framework/absco
 muses-package/refractor-framework/merra
+# Files for rattler-build
+muses-conda-channel/.condapackageignore
+muses-conda-channel/rattler-build-log.txt
 

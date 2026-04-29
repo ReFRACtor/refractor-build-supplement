@@ -1,6 +1,6 @@
 context:
   name: muses-oss
-  version: 1.03
+  version: 1.05
 
 package:
   name: ${{ name }}
@@ -11,8 +11,10 @@ package:
 # See https://github.jpl.nasa.gov/MUSES-Processing/muses-quick-docs/blob/master/git-lfs.md
 # We have a setup on pistol and rifle as ~/.ssh/config
 source:
-  - git: git@github.jpl.nasa.gov:MUSES-Processing/muses-oss.git
-    rev: 0830d167319004c140002a824c3df24ae325f20e
+  - git: ssh://git@github.jpl.nasa.gov/MUSES-Processing/muses-oss.git
+    rev: f7c7be040bedb5e1fd088eaadbccd0ef3d440e87
+    patches:
+      - 01-remove-netcdf-cpp.patch
 
 build:
   number: 0
@@ -35,10 +37,10 @@ requirements:
     # https://github.com/ContinuumIO/anaconda-issues/issues/8812,
     # can't find -lgomp or -lquadmath without this. Will probably get
     # fixed at some point and we can remove this
-    - libgcc-ng
+    - if: linux
+      then: libgcc-ng
     - hdf4
     - hdf5
-    - netcdf-cxx-legacy
     - netcdf-fortran
     - netcdf4
     - mpi * mpich
@@ -53,7 +55,6 @@ requirements:
   run:
     - hdf4
     - hdf5
-    - netcdf-cxx-legacy
     - netcdf-fortran
     - netcdf4
     - libnetcdf

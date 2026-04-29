@@ -31,13 +31,27 @@ cmake:
 boost:
   - ~= 1.84.0
 
+# Latest version of eigen doesn't work with framework. We should sort this out
+# at some point, but for now just use an older version
+eigen:
+  - <5.0.0
+
+# pynco has some conflicts with the latest gsl and hdf5 versions. Pull these back just
+# so refractor-framework and pynco can both be build. Note these versions can be updated
+# whenever, these are just driven by pynco
+gsl:
+  - ==2.7
+
+hdf5:
+  - ==1.14.6[build=nompi*]
+  
 # Don't have any particular compiler version requirement, but we do need
 # this to be consistent. This is the current version
 c_compiler_version:
-  - 14.3.0
+  - 14.3.0  # [linux]
 cxx_compiler_version:
-  - 14.3.0
+  - 14.3.0 # [linux]
 fortran_compiler_version:
-  - 14.3.0
+  - 14.3.0 # [linux]
 
   

@@ -11,7 +11,7 @@ package:
 # See https://github.jpl.nasa.gov/MUSES-Processing/muses-quick-docs/blob/master/git-lfs.md
 # We have a setup on pistol and rifle as ~/.ssh/config
 source:
-  - git: git@github.jpl.nasa.gov:MUSES-Processing/muses-vlidort.git
+  - git: ssh://git@github.jpl.nasa.gov/MUSES-Processing/muses-vlidort.git
     rev: a52eb865a49981cd0d89d13ab71014f276ef4290
     
 build:

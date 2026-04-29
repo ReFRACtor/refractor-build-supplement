@@ -6,7 +6,7 @@ package:
   name: ${{ name }}
   version: ${{ version }}
 
-source:
+#source:
   # No source, the is a meta package
   
 build:

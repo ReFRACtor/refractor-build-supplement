@@ -2,7 +2,7 @@
 authors = ["Mike Smyth <Mike.M.Smyth@jpl.nasa.gov>"]
 channels = ["conda-forge", "fake-muses-conda-channel"]
 name = "muses-env-pixi"
-platforms = ["linux-64"]
+platforms = ["osx-arm64"]
 version = "0.1.0"
 
 [tasks]
@@ -143,6 +143,7 @@ numba = "*"
 pympler = "*"
 humanize = "*"
 munch = "*"
+# Closed source
 muses-oss = "*"
 muses-vlidort = "*"
 muses-rrs = "*"
@@ -185,7 +186,12 @@ cdflib = "*"
 # scipy = "*"
 ptpython = "*"
 pytest = "*"
+pystac = "*"
+pyaml = "*"
 ghp-import = "*"
+sphinx = "*"
+plantuml = "*"
+sphinxcontrib-plantuml = "*"
 # matplotlib = "*"
 # netCDF4 = "*"
 future = "*"
@@ -251,7 +257,7 @@ mdurl = "*"
 ml_dtypes = "*"
 namex = "*"
 networkx = "*"
-nvtx = "*"
+# nvtx = "*"
 opt_einsum = "*"
 optree = "*"
 prettytable = "*"
@@ -261,8 +267,11 @@ sympy = "*"
 tensorboard = "*"
 tensorboard-data-server = "*"
 termcolor = "*"
-triton = "*"
+# triton = "*"
 werkzeug = "*"
+ty = "*"
+pdbpp = "*"
+pynco = "*"
 
 # Specific versions required by tensorflow and torchviz, so let the pypi
 # handle this
@@ -291,3 +300,4 @@ tensorflow_probability = "*"
 tf_keras = "*"
 torch = "*"
 torchviz = "*"
+mkinit = "*"

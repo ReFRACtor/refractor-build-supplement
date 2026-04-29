@@ -2,9 +2,7 @@ FROM oraclelinux:8
 
 MAINTAINER Mike Smyth Mike.M.Smyth@jpl.nasa.gov
 
-ARG REFRACTOR_BUILD_SUPPLEMNT_OPEN_SOURCE_VERSION=v0.1
-ARG REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_URL=https://github.com/ReFRACtor/refractor-build-supplement.git
-ARG MUSES_CONDA_CHANNEL_OPEN_SOURCE_TAR_URL=https://github.com/ReFRACtor/refractor-build-supplement/releases/download/v0.1/muses-conda-channel.tar
+ARG MUSES_CONDA_CHANNEL_OPEN_SOURCE_TAR_URL=https://github.com/ReFRACtor/refractor-build-supplement/releases/download/v0.9/muses-conda-channel.tar
 ARG REFRACTOR_MUSES_OPEN_SOURCE_URL=https://github.com/ReFRACtor/refractor-muses.git
 
 # Install pixi
@@ -13,7 +11,9 @@ RUN dnf install -y git git-lfs make && curl -fsSL https://pixi.sh/install.sh | s
 
 # Download build supplement (public open source version)
 # ------------------------------------------------------------
-RUN mkdir /home/workdir && cd /home/workdir && git clone $REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_URL refractor-build-supplement && cd refractor-build-supplement && curl -fsSL $MUSES_CONDA_CHANNEL_OPEN_SOURCE_TAR_URL | tar -x
+RUN mkdir -p /home/workdir/refractor-build-supplement
+COPY . /home/workdir/refractor-build-supplement
+RUN cd /home/workdir/refractor-build-supplement && curl -fsSL $MUSES_CONDA_CHANNEL_OPEN_SOURCE_TAR_URL | tar -x
 
 # Install pixi environment, with latest refractor-muses
 # ------------------------------------------------------------

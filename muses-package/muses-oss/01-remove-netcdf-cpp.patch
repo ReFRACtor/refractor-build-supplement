@@ -1,0 +1,12 @@
+diff -Naur muses-oss/make.common muses-oss-new/make.common
+--- muses-oss/make.common	2026-04-26 15:41:09
++++ muses-oss-new/make.common	2026-04-26 15:45:48
+@@ -88,7 +88,7 @@
+ JPEGLIBS = -ljpeg
+ HDF4LIBS = -lmfhdf -ldf
+ HDF5LIBS = -lhdf5_hl -lhdf5
+-NC4LIBS  = -lnetcdff -lnetcdf_c++ -lnetcdf
++NC4LIBS  = -lnetcdff -lnetcdf
+ 
+ LIBS = $(NC4LIBS) $(HDF5LIBS) $(HDF4LIBS) $(ZLIBLIBS) $(SZIPLIBS) $(JPEGLIBS) -lcurl -lm
+ 

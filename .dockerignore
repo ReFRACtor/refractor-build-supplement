@@ -1,0 +1,10 @@
+# Files not to copy into docker. This is for the public version, where
+# we get the channel list elsewhere - we can perhaps modify this if
+# we need to build using the full channel
+deprecated
+muses-conda-channel
+*~
+.git
+.gitattributes
+.gitignore
+Makefile.local

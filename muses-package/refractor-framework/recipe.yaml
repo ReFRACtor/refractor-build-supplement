@@ -1,19 +1,21 @@
 context:
   name: refractor-framework
-  version: 20251205
+  version: 20260318
 
 package:
   name: ${{ name }}
   version: ${{ version }}
 
 source:
-  - git: git@github.jpl.nasa.gov:refractor/framework.git
+  - git: ssh://git@github.jpl.nasa.gov/refractor/framework.git
     # git: git@github.com:ReFRACtor/framework.git
     # tag: ${{ version }}
-    rev: cd07269e116b16858e811c15318847dbcd0ff4fb
+    rev: cbe49b9c78963da9c06cb9db0d5d0aa6c5c46f8c
 
 build:
-  number: 0
+  #number: 0
+  # Update some versions for conflicts with pynco
+  number: 1
   script:
     - cat $RECIPE_DIR/README_build
     # Note that the various libraries are installed in $PREFIX which isn't
@@ -56,18 +58,19 @@ requirements:
     # https://github.com/ContinuumIO/anaconda-issues/issues/8812,
     # can't find -lgomp or -lquadmath without this. Will probably get
     # fixed at some point and we can remove this
-    - libgcc-ng
+    - if: linux
+      then: libgcc-ng
     - python ${{ python }}
     - numpy ${{ numpy }}
     - boost ${{ boost }}
     - pip
-    - gsl
-    - eigen
+    - gsl ${{ gsl }}
+    - eigen ${{ eigen }}
     - jsonpickle
     - libblitz
     - lidort
     - lidort-twostream
-    - hdf5
+    - hdf5 ${{ hdf5 }}
     - netcdf4
     # Needed for testing
     - matplotlib

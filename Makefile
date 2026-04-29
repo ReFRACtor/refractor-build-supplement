@@ -164,7 +164,7 @@ MUSES_TEST_RUN_REFRACTOR_DIR=$(MUSES_DIR)/muses-test-run-refractor
 
 mkfile_dir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_VERSION=v0.1
+REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_VERSION=v0.9
 # URLs for repos
 # ---------------------------------------------------------------------------
 AMUSE_CONFIG_URL=git@github.jpl.nasa.gov:MUSES-Processing/amuse-config.git
@@ -373,8 +373,13 @@ tar-muses-conda-channel:
 # ------------------------------------------------------------
 
 BASE_DOCKER=oraclelinux:8
-
+DOCKER_VERSION=0.9
+# Docker build from a standard dockerfile
 docker-public-build:
+	docker build -t refractor-docker:$(DOCKER_VERSION) -f public-docker/Dockerfile .
+
+# Docker as steps, easier to debug
+docker-public-build-steps:
 	docker run -t -d --cidfile=docker_run.id $(BASE_DOCKER) /bin/bash
 	echo "Install pixi"
 	docker exec $$(cat docker_run.id) bash --login -c "dnf install -y git git-lfs make && curl -fsSL https://pixi.sh/install.sh | sh"
@@ -384,7 +389,7 @@ docker-public-build:
 	docker exec $$(cat docker_run.id) bash --login -c "cd /home/workdir/refractor-build-supplement && make REFRACTOR_MUSES_URL=$(REFRACTOR_MUSES_OPEN_SOURCE_URL) REFRACTOR_MUSES_FROM_SOURCE=yes USE_CLOSED_SOURCE=no MUSES_DIR=/home/muses install-current"
 	echo "Set up to automatically start pixi environment"
 	docker exec $$(cat docker_run.id) bash --login -c "pixi shell-hook --shell bash --manifest-path /home/muses/muses-env > /etc/profile.d/pixi.sh"
-	docker commit $$(cat docker_run.id) refractor-public:latest
+	docker commit $$(cat docker_run.id) refractor-docker:$(DOCKER_VERSION)
 	docker container stop $$(cat docker_run.id)
 	rm docker_run.id
 
@@ -394,10 +399,10 @@ docker-public-build:
 # ---------------------------------------------------------------------
 
 docker-public-update:
-	docker run -t -d --cidfile=docker_run.id refractor-public:latest /bin/bash
+	docker run -t -d --cidfile=docker_run.id refractor-docker:$(DOCKER_VERSION) /bin/bash
 	echo "Updating refractor-muses"
 	docker exec $$(cat docker_run.id) bash --login -c "cd /home/workdir/refractor-build-supplement && make REFRACTOR_MUSES_URL=$(REFRACTOR_MUSES_OPEN_SOURCE_URL) REFRACTOR_MUSES_FROM_SOURCE=yes USE_CLOSED_SOURCE=no MUSES_DIR=/home/muses install-update"
-	docker commit $$(cat docker_run.id) refractor-public:latest
+	docker commit $$(cat docker_run.id) refractor-docker:$(DOCKER_VERSION)
 	docker container stop $$(cat docker_run.id)
 	rm docker_run.id
 
@@ -408,14 +413,14 @@ docker-public-update:
 # canned ML example shortly
 docker-public-test:
 	echo "Example of running public docker, after it has been built"
-	docker run -t --workdir /home/workdir refractor-public:latest /bin/bash --login -c "refractor-retrieve --help"
+	docker run -t --workdir /home/workdir refractor-docker:$(DOCKER_VERSION) /bin/bash --login -c "refractor-retrieve --help"
 
 # Rule to start a interactive docker instance, just so I don't need to
 # remember the syntax
 # ---------------------------------------------------------------------
 
 docker-public-start:
-	docker run -it --workdir /home/workdir refractor-public:latest /bin/bash
+	docker run -it --workdir /home/workdir refractor-docker:$(DOCKER_VERSION) /bin/bash
 
 # When a failure occurs, can connect to the docker instance used in a rule
 # ---------------------------------------------------------------------
@@ -448,7 +453,7 @@ clone-all:
 update-all:
 	@if [ -n "$(package_list)" ]; then \
 	   $(MAKE) $(addprefix $(MUSES_DIR)/, $(package_list)); \
-	   $(MAKE) $(addsuffix -update, $(addprefix $(MUSES_DIR)/, $(package_list))); \
+	   $(MAKE) $(addsuffix -update, $(package_list)); \
 	fi
 	git pull origin $$(git rev-parse --abbrev-ref HEAD)
 
@@ -460,7 +465,7 @@ ENDC =\e[0m
 # ------------------------------------------------------------
 status-all:
 	@if [ -n "$(package_list)" ]; then \
-	   $(MAKE) $(addsuffix -status, $(addprefix $(MUSES_DIR)/, $(package_list))); \
+	   $(MAKE) $(addsuffix -status, $(package_list)); \
 	fi
 	@echo -e "$(BLUE)---------------------------------" && echo -e "Status refractor-build-supplement" && echo -e "---------------------------------$(ENDC)" && git status
 
@@ -617,12 +622,12 @@ $(MUSES_DIR)/refractor_test_data:
 	cd refractor_test_data && git checkout master
 
 # Update a repository.
-$(MUSES_DIR)/%-update: $(MUSES_DIR)/%
+%-update: $(MUSES_DIR)/%
 	$(MAKE) git-lfs-check
 	cd $(MUSES_DIR)/$* && git pull origin $$(git rev-parse --abbrev-ref HEAD)
 
 # Status of repository
-$(MUSES_DIR)/%-status: $(MUSES_DIR)/%
+%-status: $(MUSES_DIR)/%
 	@cd $(MUSES_DIR)/$* && echo -e "$(BLUE)--------------------------" && echo -e "Status $*" && echo -e "--------------------------$(ENDC)" && git status && git rev-parse HEAD
 
 # Check for git lfs, printing error message if not there
@@ -665,35 +670,24 @@ ifeq ($(USE_CLOSED_SOURCE),yes)
    endif
 endif
 
+$(ENV_DIR)/pixi.toml: $(PIXI_LOCK_DIR)/pixi.toml
+	sed s"|fake-muses-conda-channel|$(CONDA_PACKAGE_DIR)|"g $< > $@
+
+$(ENV_DIR)/pixi.lock: $(PIXI_LOCK_DIR)/pixi.lock
+	sed s"|fake-muses-conda-channel|$(CONDA_PACKAGE_DIR)|"g $< > $@
+
 ifeq '$(PIXI_LOCKED)' 'yes'
-   $(ENV_DIR)/pixi.toml: $(PIXI_LOCK_DIR)/pixi.toml
-	sed s"|fake-muses-conda-channel|$(CONDA_PACKAGE_DIR)|"g $< > $@
-
-   $(ENV_DIR)/pixi.lock: $(PIXI_LOCK_DIR)/pixi.lock
-	sed s"|fake-muses-conda-channel|$(CONDA_PACKAGE_DIR)|"g $< > $@
-
    PIXI_FILE_INSTALL= $(ENV_DIR)/pixi.toml $(ENV_DIR)/pixi.lock
 
    PIXI_FILE_DEPEND=$(PIXI_LOCK_DIR)/pixi.toml $(PIXI_LOCK_DIR)/pixi.lock
 
    PIXI_INSTALL_COMMAND= pixi install --frozen --manifest-path $(ENV_DIR) 
 else
-   ifeq ($(USE_CLOSED_SOURCE),yes)
-      $(ENV_DIR)/pixi.toml: $(mkfile_dir)pixi.toml
-	sed s"|fake-muses-conda-channel|$(CONDA_PACKAGE_DIR)|"g $< > $@
-
-      PIXI_FILE_DEPEND=$(mkfile_dir)pixi.toml
-   else
-      $(ENV_DIR)/pixi.toml: $(mkfile_dir)pixi_opensource.toml
-	sed s"|fake-muses-conda-channel|$(CONDA_PACKAGE_DIR)|"g $< > $@
-
-      PIXI_FILE_DEPEND=$(mkfile_dir)pixi_opensource.toml
-   endif
-
    PIXI_FILE_INSTALL= $(ENV_DIR)/pixi.toml
 
-   PIXI_INSTALL_COMMAND= pixi install --manifest-path $(ENV_DIR) 
+   PIXI_FILE_DEPEND=$(PIXI_LOCK_DIR)/pixi.toml
 
+   PIXI_INSTALL_COMMAND= pixi install --manifest-path $(ENV_DIR) 
 endif
 
 $(ENV_DIR): $(PIXI_FILE_DEPEND)
