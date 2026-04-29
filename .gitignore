@@ -14,6 +14,8 @@ muses_environment_installed.yml
 .tramp_history
 src/
 muses-conda-channel.tar
+cris_ml_test_in.tar
+cris_docker_run_data.tar.gz
 # Test directories, that are local
 muses-package/refractor-framework/absco
 muses-package/refractor-framework/merra

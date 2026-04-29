@@ -190,7 +190,7 @@ TROPPY_URL=git@github-fn.jpl.nasa.gov:ReFRACtor/troppy.git
 REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_URL=https://github.com/ReFRACtor/refractor-build-supplement.git
 MUSES_CONDA_CHANNEL_OPEN_SOURCE_TAR_URL=https://github.com/ReFRACtor/refractor-build-supplement/releases/download/$(REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_VERSION)/muses-conda-channel.tar
 REFRACTOR_MUSES_OPEN_SOURCE_URL=https://github.com/ReFRACtor/refractor-muses.git
-
+CRIS_ML_TEST_INPUT=https://github.com/ReFRACtor/refractor-build-supplement/releases/download/$(REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_VERSION)/cris_docker_run_data.tar.gz
 # Include a Makefile.local to override things, if found
 -include Makefile.local
 
@@ -367,6 +367,22 @@ mkfile_dir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 tar-muses-conda-channel:
 	cd $(ENV_DIR); pixi run python $(mkfile_dir)/create_channel_tar.py; mv muses-conda-channel.tar $(mkfile_dir)
 
+# It isn't clear how exactly we want to handle the input needed for
+# running the CRIS ML data in MAP. For now, we create a tar file that gets
+# installed in the docker. Note this does not have the actual test data
+# (the CRIS L1B and stac file). These might get moved to an OSP or something
+# else.
+# We don't bother gzipping, the data is already pretty compressed
+# ------------------------------------------------------------
+
+tar-cris-ml-test-in:
+	-rm -r cris_ml_test_in
+	mkdir -p cris_ml_test_in
+	cp -r $(REFRACTOR_TEST_DATA_DIR)/cris/in/product_spec $(REFRACTOR_TEST_DATA_DIR)/cris/in/ml_weight $(REFRACTOR_TEST_DATA_DIR)/cris/in/ml_1 cris_ml_test_in/
+	rm cris_ml_test_in/ml_1/*.json cris_ml_test_in/ml_1/Table.asc
+	tar -cf cris_ml_test_in.tar ./cris_ml_test_in
+	-rm -r cris_ml_test_in
+
 # Build a docker image based on open source data. We will
 # want to have this built for MAPS, but this first setup here
 # will give us the steps needed for that.
@@ -401,7 +417,7 @@ docker-public-build-steps:
 docker-public-update:
 	docker run -t -d --cidfile=docker_run.id refractor-docker:$(DOCKER_VERSION) /bin/bash
 	echo "Updating refractor-muses"
-	docker exec $$(cat docker_run.id) bash --login -c "cd /home/workdir/refractor-build-supplement && make REFRACTOR_MUSES_URL=$(REFRACTOR_MUSES_OPEN_SOURCE_URL) REFRACTOR_MUSES_FROM_SOURCE=yes USE_CLOSED_SOURCE=no MUSES_DIR=/home/muses install-update"
+	docker exec $$(cat docker_run.id) bash --login -c "cd /home/muses/refractor-muses && git pull origin master && cd /home/workdir/refractor-build-supplement && make REFRACTOR_MUSES_URL=$(REFRACTOR_MUSES_OPEN_SOURCE_URL) REFRACTOR_MUSES_FROM_SOURCE=yes USE_CLOSED_SOURCE=no MUSES_DIR=/home/muses install-current"
 	docker commit $$(cat docker_run.id) refractor-docker:$(DOCKER_VERSION)
 	docker container stop $$(cat docker_run.id)
 	rm docker_run.id
@@ -409,18 +425,27 @@ docker-public-update:
 # Run a simple example test
 # ---------------------------------------------------------------------
 
-# Note this is a dummy, which just show we can run. We'll come up with a
-# canned ML example shortly
-docker-public-test:
+# Location of test work directory. Probably need to modify this for MAP, but just
+# need a directory mounted somwhere and the location passed to the refractor-retrieve arguments
+DOCKER_TEST_DATA=$(mkfile_dir)/../cris_docker_run_data
+
+$(DOCKER_TEST_DATA):
+	mkdir -p $(dir $(DOCKER_TEST_DATA))
+	curl -fsSL $(CRIS_ML_TEST_INPUT) | tar -xz -C $(dir $(DOCKER_TEST_DATA))
+
+docker-public-test: 
 	echo "Example of running public docker, after it has been built"
-	docker run -t --workdir /home/workdir refractor-docker:$(DOCKER_VERSION) /bin/bash --login -c "refractor-retrieve --help"
+	$(MAKE) $(DOCKER_TEST_DATA)
+	docker run -t --workdir /home/docker-run -v $(DOCKER_TEST_DATA):/home/docker-run:z refractor-docker:$(DOCKER_VERSION) /bin/bash --login -c "refractor-retrieve stac /home/muses/cris_ml_test_in/ml_1/retrieval_config.yaml /home/muses/cris_ml_test_in/ml_1/strategy.yaml /home/docker-run/in/catalog.json /home/docker-run/output"
+	@echo "Output is in $(DOCKER_TEST_DATA)/output"
+	ls $(DOCKER_TEST_DATA)/output
 
 # Rule to start a interactive docker instance, just so I don't need to
 # remember the syntax
 # ---------------------------------------------------------------------
 
 docker-public-start:
-	docker run -it --workdir /home/workdir refractor-docker:$(DOCKER_VERSION) /bin/bash
+	docker run -it --workdir /home/docker-run -v $(DOCKER_TEST_DATA):/home/docker-run:z refractor-docker:$(DOCKER_VERSION) /bin/bash
 
 # When a failure occurs, can connect to the docker instance used in a rule
 # ---------------------------------------------------------------------
