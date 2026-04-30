@@ -19,11 +19,16 @@ subprocess.run(["rm", "-r", "./muses-conda-channel"])
 subprocess.run(["mkdir", "-p", "./muses-conda-channel/linux-64"], check=True)
 subprocess.run(["mkdir", "-p", "./muses-conda-channel/noarch"], check=True)
 
+# Files that should be skipped
+skiplist = [r'muses-oss-.*', r'muses-rrs-.*', r'muses-vlidort-.*']
 for fname in d_muses:
     fbase = fname.name
     fsub = fname.parent.name
-    print(f"Adding file {fsub}/{fbase}")
-    subprocess.run(["cp", str(fname), f"./muses-conda-channel/{fsub}/"], check=True)
+    if not re.match("|".join(skiplist), fbase):
+        print(f"Adding file {fsub}/{fbase}")
+        subprocess.run(["cp", str(fname), f"./muses-conda-channel/{fsub}/"], check=True)
+    else:
+        print(f"Skipping file {fsub}/{fbase}")
 
 # Index packages    
 subprocess.run(["rattler-index", "fs", "-f", "./muses-conda-channel"], check=True)
