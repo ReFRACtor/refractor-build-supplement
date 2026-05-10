@@ -272,6 +272,8 @@ werkzeug = "*"
 ty = "*"
 pdbpp = "*"
 pynco = "*"
+cwltool = "*"
+cwlref-runner = "*"
 
 # Specific versions required by tensorflow and torchviz, so let the pypi
 # handle this
@@ -301,3 +303,4 @@ tf_keras = "*"
 torch = "*"
 torchviz = "*"
 mkinit = "*"
+click2cwl = "*"

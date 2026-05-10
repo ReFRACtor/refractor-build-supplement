@@ -1,0 +1,4 @@
+# Input data for running a test case of refractor-retrieve-stac
+stac_catalog_dir:
+  class: Directory
+  path: ../cris_docker_run_data/in

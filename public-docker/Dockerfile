@@ -9,6 +9,7 @@ ARG REFRACTOR_MUSES_OPEN_SOURCE_URL=https://github.com/ReFRACtor/refractor-muses
 # Install pixi
 # ------------------------------------------------------------
 RUN dnf install -y git git-lfs make && curl -fsSL https://pixi.sh/install.sh | sh
+RUN chmod a+rX -R /root/.pixi
 
 # Download build supplement (public open source version)
 # ------------------------------------------------------------

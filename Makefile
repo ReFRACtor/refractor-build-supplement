@@ -383,13 +383,25 @@ tar-cris-ml-test-in:
 	tar -cf cris_ml_test_in.tar ./cris_ml_test_in
 	-rm -r cris_ml_test_in
 
+# Create a generated CWL file from refractor. Rather than fight with the tool,
+# we use this as a basis for creating a formatted process.cwl file at the top
+# directory. This is done for now by manually modifying the file. I'm not sure
+# how often we will do this, so I don't know how much more we need to try to
+# automate this.
+
+generate_cwl: generated/process.cwl
+
+generated/process.cwl:
+	$(PIXI_RUN) refractor-retrieve-stac --stac-catalog-dir $(REFRACTOR_TEST_DATA_DIR)/cris/in/ml_1 -o ./output_dir --dump cwl --docker docker.io/mikesmyth/refractor-docker:$(DOCKER_VERSION) > $@
+	@echo "Manually update generated/process.cwl to create process.cwl"
+
 # Build a docker image based on open source data. We will
 # want to have this built for MAPS, but this first setup here
 # will give us the steps needed for that.
 # ------------------------------------------------------------
 
 BASE_DOCKER=oraclelinux:8
-DOCKER_VERSION=0.9
+DOCKER_VERSION=0.91
 # Docker build from a standard dockerfile
 docker-public-build:
 	docker build -t refractor-docker:$(DOCKER_VERSION) -f public-docker/Dockerfile .
@@ -422,6 +434,16 @@ docker-public-update:
 	docker container stop $$(cat docker_run.id)
 	rm docker_run.id
 
+# Upload to docker.io. Not sure that this is right way to handle this
+# long term, this is my personal docker account. But for now, do this
+# so we have a delivery point
+# ---------------------------------------------------------------------
+
+docker-public-upload:
+	docker tag refractor-docker:$(DOCKER_VERSION) docker.io/mikesmyth/refractor-docker:$(DOCKER_VERSION)
+	docker login --username mikesmyth docker.io
+	docker push docker.io/mikesmyth/refractor-docker:$(DOCKER_VERSION)
+
 # Run a simple example test
 # ---------------------------------------------------------------------
 
@@ -429,6 +451,16 @@ docker-public-update:
 # need a directory mounted somwhere and the location passed to the refractor-retrieve arguments
 DOCKER_TEST_DATA=$(mkfile_dir)/../cris_docker_run_data
 
+# Note cwl-runner needs the --podman if you are using podman. It will give you
+# mysterious errors if you run without this - it will run a docker command that
+# points to podman but with weird permission differences. It seems everything including
+# the working directory get mounted as readonly. There permission of docker/podman have
+# always been a mystery to me, so this took a long time to track down. We should
+# probably put some kind of control in here based on autodetection, but for now just
+# have this explicit. I assume the oppose (saying --podman but having docker) would be
+# a problem also.
+
+CWL_RUNNER_ARG= --podman
 $(DOCKER_TEST_DATA):
 	mkdir -p $(dir $(DOCKER_TEST_DATA))
 	curl -fsSL $(CRIS_ML_TEST_INPUT) | tar -xz -C $(dir $(DOCKER_TEST_DATA))
@@ -436,7 +468,9 @@ $(DOCKER_TEST_DATA):
 docker-public-test: 
 	echo "Example of running public docker, after it has been built"
 	$(MAKE) $(DOCKER_TEST_DATA)
-	docker run -t --workdir /home/docker-run -v $(DOCKER_TEST_DATA):/home/docker-run:z refractor-docker:$(DOCKER_VERSION) /bin/bash --login -c "refractor-retrieve stac /home/muses/cris_ml_test_in/ml_1/retrieval_config.yaml /home/muses/cris_ml_test_in/ml_1/strategy.yaml /home/docker-run/in/catalog.json /home/docker-run/output"
+	-rm -r $(DOCKER_TEST_DATA)/output
+	$(MKDIR_P) $(DOCKER_TEST_DATA)/output
+	$(PIXI_RUN) cwl-runner --podman --outdir $(DOCKER_TEST_DATA)/output process.cwl#refractor-retrieve-stac inp.yml
 	@echo "Output is in $(DOCKER_TEST_DATA)/output"
 	ls $(DOCKER_TEST_DATA)/output
 
