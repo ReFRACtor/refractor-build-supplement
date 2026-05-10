@@ -118,8 +118,11 @@ $graph:
     label: Refractor Retrieve Tool
 
     requirements:
+      # Not sure if this is the best way to pass this in. I have a build of docker
+      # in my personal docker account. This can also just be built from our
+      # Dockerfile (make docker-public-build)
       DockerRequirement:
-        dockerPull: localhost/refractor-docker:0.91
+        dockerPull: docker.io/mikesmyth/refractor-docker:0.91
 
       EnvVarRequirement:
         envDef:

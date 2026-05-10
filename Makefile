@@ -191,6 +191,11 @@ REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_URL=https://github.com/ReFRACtor/refracto
 MUSES_CONDA_CHANNEL_OPEN_SOURCE_TAR_URL=https://github.com/ReFRACtor/refractor-build-supplement/releases/download/$(REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_VERSION)/muses-conda-channel.tar
 REFRACTOR_MUSES_OPEN_SOURCE_URL=https://github.com/ReFRACtor/refractor-muses.git
 CRIS_ML_TEST_INPUT=https://github.com/ReFRACtor/refractor-build-supplement/releases/download/$(REFRACTOR_BUILD_SUPPLEMENT_OPEN_SOURCE_VERSION)/cris_docker_run_data.tar.gz
+
+# Version we checkout of code. Default is master, but can use this to freeze a
+# version
+REFRACTOR_MUSES_VERSION=master
+
 # Include a Makefile.local to override things, if found
 -include Makefile.local
 
@@ -383,17 +388,21 @@ tar-cris-ml-test-in:
 	tar -cf cris_ml_test_in.tar ./cris_ml_test_in
 	-rm -r cris_ml_test_in
 
+# Did this initially. I don't think we need this again, but leave in the Makefile
+# for reference
+# --------------------------------------------------------------------------------
+
 # Create a generated CWL file from refractor. Rather than fight with the tool,
 # we use this as a basis for creating a formatted process.cwl file at the top
 # directory. This is done for now by manually modifying the file. I'm not sure
 # how often we will do this, so I don't know how much more we need to try to
 # automate this.
 
-generate_cwl: generated/process.cwl
+#generate_cwl: generated/process.cwl
 
-generated/process.cwl:
-	$(PIXI_RUN) refractor-retrieve-stac --stac-catalog-dir $(REFRACTOR_TEST_DATA_DIR)/cris/in/ml_1 -o ./output_dir --dump cwl --docker docker.io/mikesmyth/refractor-docker:$(DOCKER_VERSION) > $@
-	@echo "Manually update generated/process.cwl to create process.cwl"
+#generated/process.cwl:
+#	$(PIXI_RUN) refractor-retrieve-stac --stac-catalog-dir $(REFRACTOR_TEST_DATA_DIR)/cris/in/ml_1 -o ./output_dir --dump cwl --docker docker.io/mikesmyth/refractor-docker:$(DOCKER_VERSION) > $@
+#	@echo "Manually update generated/process.cwl to create process.cwl"
 
 # Build a docker image based on open source data. We will
 # want to have this built for MAPS, but this first setup here
@@ -669,7 +678,7 @@ $(MUSES_DIR)/refractor-muses:
 	cd $(MUSES_DIR) && \
 	echo "Cloning refractor-muses from $(REFRACTOR_MUSES_URL)" && \
 	git clone "$(REFRACTOR_MUSES_URL)" refractor-muses && \
-	cd refractor-muses && git checkout master
+	cd refractor-muses && git checkout $(REFRACTOR_MUSES_VERSION)
 
 # Doesn't fit our naming convention, perhaps we should replace the name?
 $(MUSES_DIR)/refractor_test_data:
