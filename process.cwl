@@ -12,7 +12,7 @@ $schemas:
 
 # Schema.org Metadata for Discoverability
 s:softwareVersion: 0.91
-s:version: 1.0.0
+s:version: 1.0.1
 s:datePublished: 2026-05-10
 s:author:
   - class: s:Person
@@ -101,7 +101,7 @@ $graph:
 
     steps:
       step_1:
-        run: "#clt"
+        run: "#main"
         in:
           retrieval_config: retrieval_config
           strategy_table: strategy_table
@@ -114,7 +114,7 @@ $graph:
   # ============================================================================
 
   - class: CommandLineTool
-    id: clt
+    id: main
     label: Refractor Retrieve Tool
 
     requirements:
@@ -128,8 +128,6 @@ $graph:
         envDef:
           PATH: /root/.pixi/bin:/home/muses/muses-env/.pixi/envs/default/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin
           PYTHONUNBUFFERED: "1"
-
-      InlineJavascriptRequirement: {}
 
     inputs:
       retrieval_config:
@@ -146,7 +144,7 @@ $graph:
         type: Directory
         inputBinding:
           position: 3
-          valueFrom: $(self.path + '/catalog.json')
+          valueFrom: $(self.path)/catalog.json
 
       output_dir:
         type: string?
@@ -159,7 +157,7 @@ $graph:
           type: array
           items: [File, Directory]
         outputBinding:
-          glob: $(inputs.output_dir + '/*')
+          glob: $(inputs.output_dir)/*
 
       stdout_file:
         type: File
